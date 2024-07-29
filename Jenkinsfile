@@ -11,7 +11,12 @@ pipeline {
   }
 
   stages {
-    
+        
+        stage('Fetch code') {
+          steps{
+              git branch: 'main', url:'https://github.com/silhanr/cicd-kube-docker.git'
+          }  
+        }
         stage('Build') {
             steps {
                 sh 'mvn clean install -DskipTests'
@@ -66,7 +71,7 @@ pipeline {
       stage('Kubernetes Deploy') {
         agent {label 'KOPS'}
         steps {
-          sh "helm upgrade --install --force vprofile-stack /home/ubuntu/cicd-kube-docker/helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER} -n prod"
+          sh "helm upgrade --install --force vprofile-stack /home/ubuntu/helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER} -n prod"
         }
       }
 
